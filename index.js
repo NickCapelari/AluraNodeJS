@@ -1,6 +1,16 @@
 const chalk = require('chalk');
 const fs = require('fs');
 
+function extraiLinks(texto) {
+  const regex = /\[([^\]]*)\]\((https?:\/\/[^$#\s].[^\s]*)\)/gm;
+  const arrayResultados = [];
+  let temp;
+  while ((temp = regex.exec(texto)) !== null) {
+    arrayResultados.push({ [temp[1]]: temp[2] })
+  }
+  return arrayResultados.length === 0 ? 'não há links' : arrayResultados;
+}
+
 function trataErro(erro) {
   throw new Error(chalk.red(erro.code, 'Verifique o arquivo informado'));
 }
@@ -9,13 +19,17 @@ async function pegaArquivo(caminhoDoArquivo) {
   try {
     const encoding = 'UTF-8';
     const texto = await fs.promises.readFile(caminhoDoArquivo, encoding);
-    console.log(chalk.green(texto))
+    return extraiLinks(texto);
   } catch (erro) {
     trataErro(erro)
   }
 
 }
-pegaArquivo('./arquivos/texto1.md')
+module.exports = pegaArquivo;
+//pegaArquivo('./arquivos/texto1.md')
+
+
+
 
 // function pegaArquivo(caminhoDoArquivo) {
 //   const encoding = 'UTF-8';
